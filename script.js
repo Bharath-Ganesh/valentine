@@ -10,21 +10,21 @@ let tauntIndex = 0;
 
 // Funny taunt messages
 const taunts = [
-    "Don't even try, Babe!! 😏",
-    "Aheem.. told yaa, Pookie! 🙄",
-    "Don't do it, Rubina! ⚠️",
-    "Nope! Not happening, Idiyaat! 😂",
-    "You really thought, Babe? 🤣",
-    "Nice try, Pookie! 💅",
-    "Still trying? Really, Rubina? 😆",
-    "Give up already, Babe! 💖",
-    "You know you want to say yes, Pookie! 😘",
-    "Stop being stubborn, Idiyaat! 🥰",
-    "The button said BYE! 👋",
-    "Rubina, just say yes already! 💕",
-    "You can't escape this, Babe! 😎",
-    "Why you playing, Pookie? 🎮",
-    "Resistance is futile, Rubina! 💪"
+    "Don't even try, Babe!!",
+    "Aheem.. told yaa, Pookie!",
+    "Don't do it, Rubina!",
+    "Nope! Not happening, Idiyaat!",
+    "You really thought, Babe?",
+    "Nice try, Pookie!",
+    "Still trying? Really, Rubina?",
+    "Give up already, Babe!",
+    "You know you want to say yes, Pookie!",
+    "Stop being stubborn, Idiyaat!",
+    "The button said BYE!",
+    "Rubina, just say yes already!",
+    "You can't escape this, Babe!",
+    "Why you playing, Pookie?",
+    "Resistance is futile, Rubina!"
 ];
 
 // When hovering over the No button, it moves to a random position
@@ -40,9 +40,6 @@ noBtn.addEventListener('click', (e) => {
 
 // Make the Yes button grow bigger each time No is hovered
 function moveNoButton() {
-    const container = document.querySelector('.buttons-container');
-    const containerRect = container.getBoundingClientRect();
-
     // Show taunt message
     tauntMessage.textContent = taunts[tauntIndex];
     tauntMessage.style.animation = 'none';
@@ -52,14 +49,17 @@ function moveNoButton() {
 
     tauntIndex = (tauntIndex + 1) % taunts.length;
 
-    // Get random position within a reasonable range
-    const maxX = window.innerWidth - 200;
-    const maxY = window.innerHeight - 100;
+    // Get random position within the main content card so it always stays visible
+    const contentRect = content.getBoundingClientRect();
+    const buttonWidth = noBtn.offsetWidth;
+    const buttonHeight = noBtn.offsetHeight;
+    const maxX = Math.max(0, contentRect.width - buttonWidth - 40);
+    const maxY = Math.max(0, contentRect.height - buttonHeight - 40);
 
-    const randomX = Math.random() * maxX;
-    const randomY = Math.random() * maxY;
+    const randomX = contentRect.left + 20 + Math.random() * maxX;
+    const randomY = contentRect.top + 20 + Math.random() * maxY;
 
-    // Move the No button to random position
+    // Move the No button to a random position inside the content area
     noBtn.style.position = 'fixed';
     noBtn.style.left = randomX + 'px';
     noBtn.style.top = randomY + 'px';
@@ -86,6 +86,9 @@ yesBtn.addEventListener('click', () => {
 
     // Create confetti effect
     createConfetti();
+
+    // Create fireworks effect
+    createFireworks();
 });
 
 // Confetti animation
@@ -142,3 +145,70 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Fireworks animation
+function createFireworks() {
+    const fireworksContainer = document.getElementById('fireworks');
+    const colors = ['#ff1493', '#ff69b4', '#ff85c1', '#ffc0cb', '#ff6b9d', '#c06c84'];
+
+    function launchFirework() {
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+
+        // Create multiple particles for each firework
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'firework';
+            particle.style.left = x + '%';
+            particle.style.top = y + '%';
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+            const angle = (Math.PI * 2 * i) / 30;
+            const velocity = 50 + Math.random() * 50;
+            const tx = Math.cos(angle) * velocity;
+            const ty = Math.sin(angle) * velocity;
+
+            particle.style.setProperty('--tx', tx + 'px');
+            particle.style.setProperty('--ty', ty + 'px');
+
+            fireworksContainer.appendChild(particle);
+
+            setTimeout(() => {
+                particle.remove();
+            }, 1500);
+        }
+    }
+
+    // Launch fireworks at intervals
+    launchFirework();
+    const fireworkInterval = setInterval(launchFirework, 800);
+
+    // Stop after 10 seconds
+    setTimeout(() => {
+        clearInterval(fireworkInterval);
+    }, 10000);
+}
+
+// Floating hearts animation
+function createFloatingHearts() {
+    const heartsContainer = document.getElementById('floatingHearts');
+    const heartEmojis = ['❤️', '💕', '💖', '💗', '💓', '💝', '💘'];
+
+    function createHeart() {
+        const heart = document.createElement('div');
+        heart.className = 'floating-heart-celebration';
+        heart.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDuration = (3 + Math.random() * 2) + 's';
+        heart.style.animationDelay = Math.random() * 2 + 's';
+
+        heartsContainer.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 6000);
+    }
+
+    // Create hearts continuously
+    setInterval(createHeart, 500);
+}
